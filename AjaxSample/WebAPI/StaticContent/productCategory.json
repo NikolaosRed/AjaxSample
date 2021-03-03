@@ -1,0 +1,15 @@
+[
+
+  {
+	"productCategoryID": 4,
+	"name": "Accessories"
+  }, {
+	"productCategoryID": 5,
+	"name": "Shorts"
+  },
+  {
+	"productCategoryID": 6,
+	"name": "Bike"
+  }
+
+]

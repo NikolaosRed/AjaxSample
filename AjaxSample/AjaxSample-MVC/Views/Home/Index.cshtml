@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Ajax Samples</title>
+
+	<link rel="stylesheet" type="text/css" href="~/css/site.css">
+</head>
+
+<body>
+	<h1>Ajax Samples</h1>
+	<p>Bring up console window</p>
+
+	<div class="row" id="header">
+	</div>
+
+	<form>
+		<div class="row">
+			<label for="productID">Product ID</label>
+			<input id="productID" name="productID" type="text" value="0" />
+		</div>
+		<div class="row">
+			<label for="name">Product Name</label>
+			<input id="name" name="name" type="text" value="A New Product" />
+		</div>
+		<div class="row">
+			<label for="productNumber">Product Number</label>
+			<input id="productNumber" name="productNumber" type="text" value="NEW-999" />
+		</div>
+		<div class="row">
+			<label for="color">Color</label>
+			<input id="color" name="color" type="text" value="Red" />
+		</div>
+		<div class="row">
+			<label for="standardCost">Cost</label>
+			<input id="standardCost" name="standardCost" type="number" value="10.00" />
+		</div>
+		<div class="row">
+			<label for="listPrice">Price</label>
+			<input id="listPrice" name="listPrice" type="number" value="25.00" />
+		</div>
+		<div class="row">
+			<label for="sellStartDate">Sell Start Date</label>
+			<input id="sellStartDate" name="sellStartDate" type="text" value="1/15/2021" />
+		</div>
+		<div class="row">
+			<label id="message" class="infoMessage"></label>
+			<label id="error" class="errorMessage"></label>
+		</div>
+		<div class="row">
+			<button type="button" onclick="get();">
+				Get Products
+			</button>
+			<button type="button" onclick="getProduct();">
+				Get a Product
+			</button>
+			<button type="button" onclick="insertProduct();">
+				Insert Product
+			</button>
+			<button type="button" onclick="updateProduct();">
+				Update Product
+			</button>
+			<button type="button" onclick="deleteProduct();">
+				Delete Product
+			</button>
+			<button type="button" onclick="correctTryCatch();">
+				Catch Sample
+			</button>
+		</div>
+	</form>
+
+	<script src="~/js/ajax-common.js"></script>
+	<script src="~/js/product.js"></script>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+		'use strict';
+
+		const URL = "http://localhost:5000/api/product";
+
+		function get() {
+			$.get(URL)
+				.done(function (data) {
+					displayMessage("Products Retrieved");
+					console.log(data);
+				})
+				.fail(function (error) {
+					handleAjaxError(error);
+				})
+				.always(function () {
+					console.log("In the always() method");
+				});
+		}
+		//Using callback function
+		// function get() {
+		// 	$.ajax({
+		// 		url: URL,
+		// 		type: 'GET',
+		// 		contentType: 'application/json',
+		// 		success: function (data) {
+		// 			displayMessage("Products Retrieved");
+		// 			console.log(data);
+		// 		},
+		// 		error: function (error) {
+		// 			handleAjaxError(error);
+		// 		},
+		// 		complete: function () {
+		// 			console.log("In the complete function");
+		// 		}
+		// 	});
+		// }
+
+		function getProduct() {
+			$.get(URL + "/" + getValue("productID"))
+				.done(function (data) {
+					displayMessage("Product Retrieved");
+					setInput(data);
+				})
+				.fail(function (error) {
+					handleAjaxError(error);
+				})
+				.always(function () {
+					console.log("In the always() method");
+				});
+		}
+
+		function updateProduct() {
+			// Build product object from user input
+			let product = getFromInput();
+
+			$.ajax({
+				url: URL + "/" + product.productID,
+				type: "PUT",
+				contentType: "application/json",
+				data: JSON.stringify(product)
+			})
+				.done(function (data) {
+					displayMessage("Product Inserted");
+					console.log(data);
+					setInput(data);
+				})
+				.fail(function (error) {
+					handleAjaxError(error);
+				})
+				.always(function () {
+					// Anything you want to happen here on either fail or done
+				});
+		}
+
+		function insertProduct() {
+			// Gather product data from user input
+			let product = getFromInput();
+
+			// NOTE: contentType default is
+			//       'application/x-www-form-urlencoded; charset=UTF-8'
+			// Use the settings object to set the 'Content-Type' header
+			// with 'application/json' which is what the server is expecting
+			let settings = {
+				url: URL,
+				contentType: "application/json",
+				data: JSON.stringify(product)
+			}
+
+			$.post(settings)
+				.done(function (data) {
+					displayMessage("Product Inserted");
+					console.log(data);
+					setInput(data);
+				})
+				.fail(function (error) {
+					handleAjaxError(error);
+				})
+				.always(function () {
+					console.log("In the always() method");
+				});
+		}
+
+		function correctTryCatch() {
+			$.ajax({
+				url: URL,
+				type: 'GET',
+				contentType: "application/json"
+			})
+				.done(function (data) {
+					// NOTE: try...catch belongs within each promise method
+					try {
+						console.log(data);
+					} catch (error) {
+						console.error(error);
+					}
+				})
+				.fail(function (error) {
+					handleAjaxError(error);
+				})
+				.always(function () {
+					// Anything you want to happen here on either fail or done
+					console.log("In the always() method");
+				});
+		}
+		
+	</script>
+</body>
+
+</html>
